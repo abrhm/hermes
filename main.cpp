@@ -50,11 +50,8 @@ private:
 };
 */
 
-
-
 int main() {
-
-	Connection<MockConnection<0>> test;
+	Connection* c = new ConnectionImplementation<MockConnection<0>>();
 
 	return 0;
 }

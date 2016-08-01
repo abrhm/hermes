@@ -11,23 +11,16 @@
 
 class ConnectionConnector;
 
-// TODO implementation must inherit from ConnectionInterface
-template<typename Implementation>
+
 class Connection {
 public:
-	Connection();
-	~Connection() {};
+	Connection(ConnectionInterface* iface);
+	~Connection () {};
 
-	// Methods for core
-
-	// Push messages from the core to the connection
 	void push(std::vector<Message>&);
-	// Fetch the outcoming messages to the core
 	void fetch(std::vector<Message>&);
 
-	// Methods for the ConnectionInterface
 	static void send(Message&);
-
 	static Message receive();
 
 private:
@@ -38,16 +31,12 @@ private:
 	std::vector<Message> messages_received;
 };
 
-template<typename Implementation>
-Connection<Implementation>::Connection ()
-: interface (new Implementation(ConnectionConnector(send, receive)))
+Connection::Connection (ConnectionInterface* iface)
+: interface(iface)
 {
-	std::cout << "constructor" << std::endl;
-	messages_received.push_back("success");
 }
 
-template<typename Implementation>
-void Connection<Implementation>::push (std::vector<Message>&)
+void Connection::push (std::vector<Message>&)
 {
 /*	mtx.lock();
 	std::move(income.begin(), income.end(), back_inserter(messages_received));
@@ -57,19 +46,30 @@ void Connection<Implementation>::push (std::vector<Message>&)
 */
 }
 
-template<typename Implementation>
-void Connection<Implementation>::fetch (std::vector<Message>&)
+void Connection::fetch (std::vector<Message>&)
 {
 }
 
-template<typename Implementation>
-void Connection<Implementation>::send (Message&)
+void Connection::send (Message&)
 {
 }
 
-template<typename Implementation>
-Message Connection<Implementation>::receive ()
+Message Connection::receive ()
 {
 	return Message("hello");
 	// return messages_received.pop_back();
 }
+
+
+
+template<typename Implementation>
+class ConnectionImplementation : public Connection{
+public:
+	ConnectionImplementation();
+	~ConnectionImplementation();
+};
+
+template<typename Implementation>
+ConnectionImplementation<Implementation>::ConnectionImplementation ()
+: Connection(new Implementation(ConnectionConnector(send, receive)))
+{}
