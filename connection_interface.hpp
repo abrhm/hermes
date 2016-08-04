@@ -17,11 +17,11 @@ public:
 	void stop();
 	virtual void loop() = 0;
 protected:
-	bool running = false;
+	ConnectionConnector connector;
 
 private:
+	bool running = false;
 	std::thread thread;
-	ConnectionConnector connector;
 };
 
 // Implementation
@@ -29,12 +29,12 @@ ConnectionInterface::ConnectionInterface (ConnectionConnector conn)
 : running (false)
 , connector (conn)
 {
-	std::cout << "CONSTRUCTOR" << std::endl;
-	std::cout << "message: " << connector.receive() << std::endl;
 }
 
 ConnectionInterface::~ConnectionInterface ()
 {
+	std::cout << "message: " << connector.receive() << std::endl;
+
 	if (thread.joinable())
 		thread.join();
 }

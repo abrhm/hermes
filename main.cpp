@@ -19,6 +19,7 @@ public:
 
 	virtual void loop () {
 		std::cout << "MockConnection run " << T << std::endl;
+		std::cout << "message: " << connector.receive() << std::endl;
 		std::this_thread::sleep_for(std::chrono::milliseconds(2000));
 	}
 };
@@ -52,6 +53,8 @@ private:
 
 int main() {
 	Connection* c = new ConnectionImplementation<MockConnection<0>>();
+
+	delete c;
 
 	return 0;
 }

@@ -21,19 +21,21 @@ public:
 	void fetch(std::vector<Message>&);
 
 	static void send(Message&);
-	static Message receive();
+	Message receive();
 
-private:
-	std::unique_ptr<ConnectionInterface> interface;
+protected:
 	// Propagete to the message handler
 	std::vector<Message> messages_sending;
 	// For users under this connection
 	std::vector<Message> messages_received;
+
+	std::unique_ptr<ConnectionInterface> interface;
 };
 
 Connection::Connection (ConnectionInterface* iface)
 : interface(iface)
 {
+	messages_sending.push_back("test message");
 }
 
 void Connection::push (std::vector<Message>&)
@@ -56,14 +58,13 @@ void Connection::send (Message&)
 
 Message Connection::receive ()
 {
-	return Message("hello");
-	// return messages_received.pop_back();
+	return messages_sending.back();
 }
 
 
 
 template<typename Implementation>
-class ConnectionImplementation : public Connection{
+class ConnectionImplementation : public Connection {
 public:
 	ConnectionImplementation();
 	~ConnectionImplementation();
@@ -71,5 +72,7 @@ public:
 
 template<typename Implementation>
 ConnectionImplementation<Implementation>::ConnectionImplementation ()
-: Connection(new Implementation(ConnectionConnector(send, receive)))
-{}
+: Connection(new Implementation(ConnectionConnector(send, std::bind(&Connection::receive, this))))
+{
+	// std::cout << messages_sending.back() << std::endl;
+}
